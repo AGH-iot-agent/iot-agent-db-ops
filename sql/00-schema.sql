@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS devices (
+  id BIGSERIAL PRIMARY KEY,
+  device_id VARCHAR(64) UNIQUE NOT NULL,
+  name VARCHAR(128) NOT NULL,
+  status VARCHAR(32) NOT NULL DEFAULT 'ACTIVE',
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS alerts (
+  id BIGSERIAL PRIMARY KEY,
+  device_id VARCHAR(64) NOT NULL,
+  severity VARCHAR(16) NOT NULL,
+  message TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_alerts_device_id ON alerts(device_id);
+CREATE INDEX IF NOT EXISTS idx_alerts_created_at ON alerts(created_at);
