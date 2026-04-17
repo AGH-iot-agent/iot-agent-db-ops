@@ -2,14 +2,14 @@ name: DB Init & Seed
 
 on:
   push:
-    branches: [main]
+    branches: [main, feat/iot-agent-db-ops]
     paths:
       - 'iot-agent-db-ops/Helm/sql/**'
       - 'iot-agent-db-ops/Helm/templates/**'
       - 'iot-agent-db-ops/Helm/values-dev.yaml'
       - 'iot-agent-db-ops/Helm/Chart.yaml'
   pull_request:
-    branches: [main]
+    branches: [main, feat/iot-agent-db-ops]
     paths:
       - 'iot-agent-db-ops/Helm/sql/**'
       - 'iot-agent-db-ops/Helm/templates/**'
