@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-init
+  namespace: {{ .Values.namespace }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-init
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: db-init
+          image: postgres:16-alpine
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.secretName }}
+                  key: {{ .Values.postgres.secretKey }}
+            - name: PG_HOST
+              value: "{{ .Values.postgres.host }}"
+            - name: PG_PORT
+              value: "{{ .Values.postgres.port }}"
+            - name: PG_USER
+              value: "{{ .Values.postgres.user }}"
+            - name: PG_DATABASE
+              value: "{{ .Values.postgres.database }}"
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "==> Connecting to $PG_HOST:$PG_PORT/$PG_DATABASE as $PG_USER..."
+              echo "==> Applying schema..."
+              psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DATABASE" -f /sql/00-schema.sql
+              echo "==> Applying seed data..."
+              psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DATABASE" -f /sql/10-seed.sql
+              echo "==> DB init complete."
+          volumeMounts:
+            - name: sql-scripts
+              mountPath: /sql
+      volumes:
+        - name: sql-scripts
+          configMap:
+            name: {{ .Release.Name }}-sql

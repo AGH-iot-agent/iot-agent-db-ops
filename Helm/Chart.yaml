@@ -1,0 +1,4 @@
+apiVersion: v2
+name: iot-agent-db-ops
+version: 0.1.0
+description: Database schema initialization and seed data for IoT Agent platform

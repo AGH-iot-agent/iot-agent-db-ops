@@ -1,0 +1,68 @@
+name: DB Init & Seed
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'iot-agent-db-ops/Helm/sql/**'
+      - 'iot-agent-db-ops/Helm/templates/**'
+      - 'iot-agent-db-ops/Helm/values-dev.yaml'
+      - 'iot-agent-db-ops/Helm/Chart.yaml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'iot-agent-db-ops/Helm/sql/**'
+      - 'iot-agent-db-ops/Helm/templates/**'
+      - 'iot-agent-db-ops/Helm/values-*.yaml'
+      - 'iot-agent-db-ops/Helm/Chart.yaml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: dev
+        type: choice
+        options: [dev, sbx]
+
+env:
+  KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+jobs:
+  db-init:
+    name: "Deploy DB init job (${{ github.event.inputs.environment || (github.event_name == 'pull_request' && 'sbx' || 'dev') }})"
+    runs-on: [self-hosted, iot-agent-local]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      - name: Resolve environment
+        id: env
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            ENV="${{ github.event.inputs.environment }}"
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            ENV="sbx"
+          else
+            ENV="dev"
+          fi
+          echo "name=$ENV" >> "$GITHUB_OUTPUT"
+          echo "namespace=iotag-$ENV" >> "$GITHUB_OUTPUT"
+
+      - name: Helm upgrade --install db-ops
+        run: |
+          helm upgrade --install iot-agent-db-ops iot-agent-db-ops/Helm/ \
+            -f iot-agent-db-ops/Helm/values-${{ steps.env.outputs.name }}.yaml \
+            -n ${{ steps.env.outputs.namespace }} \
+            --wait \
+            --timeout 120s
+
+      - name: Show job logs
+        if: always()
+        run: |
+          kubectl logs -n ${{ steps.env.outputs.namespace }} \
+            -l app=iot-agent-db-ops-init \
+            --tail=100 2>/dev/null || echo "(no logs yet)"

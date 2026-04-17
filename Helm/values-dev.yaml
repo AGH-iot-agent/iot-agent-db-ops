@@ -1,17 +1,9 @@
-auth:
-  username: gte
-  password: gte
+namespace: iotag-dev
+
+postgres:
+  host: iot-agent-postgres-postgresql.iotag-dev.svc.cluster.local
+  port: 5432
   database: iot_agent
-
-primary:
-  persistence:
-    enabled: true
-    size: 5Gi
-
-resources:
-  requests:
-    cpu: 100m
-    memory: 256Mi
-  limits:
-    cpu: 500m
-    memory: 512Mi
+  user: gte
+  secretName: iot-agent-postgres-postgresql
+  secretKey: password
