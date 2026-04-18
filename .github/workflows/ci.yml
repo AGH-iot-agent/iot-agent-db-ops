@@ -4,17 +4,17 @@ on:
   push:
     branches: [main, feat/iot-agent-db-ops]
     paths:
-      - 'iot-agent-db-ops/Helm/sql/**'
-      - 'iot-agent-db-ops/Helm/templates/**'
-      - 'iot-agent-db-ops/Helm/values-dev.yaml'
-      - 'iot-agent-db-ops/Helm/Chart.yaml'
+      - 'Helm/sql/**'
+      - 'Helm/templates/**'
+      - 'Helm/values-dev.yaml'
+      - 'Helm/Chart.yaml'
   pull_request:
     branches: [main, feat/iot-agent-db-ops]
     paths:
-      - 'iot-agent-db-ops/Helm/sql/**'
-      - 'iot-agent-db-ops/Helm/templates/**'
-      - 'iot-agent-db-ops/Helm/values-*.yaml'
-      - 'iot-agent-db-ops/Helm/Chart.yaml'
+      - 'Helm/sql/**'
+      - 'Helm/templates/**'
+      - 'Helm/values-*.yaml'
+      - 'Helm/Chart.yaml'
   workflow_dispatch:
     inputs:
       environment:
@@ -54,8 +54,8 @@ jobs:
 
       - name: Helm upgrade --install db-ops
         run: |
-          helm upgrade --install iot-agent-db-ops iot-agent-db-ops/Helm/ \
-            -f iot-agent-db-ops/Helm/values-${{ steps.env.outputs.name }}.yaml \
+          helm upgrade --install iot-agent-db-ops Helm/ \
+            -f Helm/values-${{ steps.env.outputs.name }}.yaml \
             -n ${{ steps.env.outputs.namespace }} \
             --wait \
             --timeout 120s
