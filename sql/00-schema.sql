@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS devices (
   map_sensor_enabled BOOLEAN NOT NULL DEFAULT true
 );
 
+
 CREATE TABLE IF NOT EXISTS alerts (
   id BIGSERIAL PRIMARY KEY,
   device_id VARCHAR(128) NOT NULL,
@@ -27,6 +28,7 @@ CREATE TABLE IF NOT EXISTS alerts (
   message TEXT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   active BOOLEAN DEFAULT false,
+  anomaly BOOLEAN,
   anomaly_score NUMERIC,
   krakow_zone VARCHAR(255),
   leak BOOLEAN
