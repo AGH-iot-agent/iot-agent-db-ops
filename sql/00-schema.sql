@@ -1,3 +1,6 @@
+
+-- 00-schema.sql: Full schema for IoT Agent DB
+
 CREATE TABLE IF NOT EXISTS users (
   id BIGSERIAL PRIMARY KEY,
   username VARCHAR(64) UNIQUE NOT NULL,
@@ -22,7 +25,11 @@ CREATE TABLE IF NOT EXISTS alerts (
   device_id VARCHAR(128) NOT NULL,
   severity VARCHAR(16) NOT NULL,
   message TEXT NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  active BOOLEAN DEFAULT false,
+  anomaly_score NUMERIC,
+  krakow_zone VARCHAR(255),
+  leak BOOLEAN
 );
 
 CREATE INDEX IF NOT EXISTS idx_alerts_device_id ON alerts(device_id);
