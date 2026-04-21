@@ -10,5 +10,5 @@ postgres:
   
 auth:
   username: gte
-  password: "wstaw_tutaj_haslo"
+  password: gte
   database: iot_agent
