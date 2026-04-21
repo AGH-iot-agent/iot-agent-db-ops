@@ -41,10 +41,10 @@ jobs:
 
       - name: Populate DB
         run: |
-          kubectl exec -n iotag-${{ steps.env.outputs.namespace }} -it \ 
+          kubectl exec -n iotag-${{ steps.env.outputs.namespace }} -it \
             -l app=iot-agent-db-ops-init -- \
-            psql -U gte -d iot_agent > /sql/00-schema.sql
+            psql -U gte -d iot_agent < /sql/00-schema.sql
 
-          kubectl exec -n iotag-${{ steps.env.outputs.namespace }} -it \ 
+          kubectl exec -n iotag-${{ steps.env.outputs.namespace }} -it \
             -l app=iot-agent-db-ops-init -- \
-            psql -U gte -d iot_agent > /sql/10-seed-dev.sql
+            psql -U gte -d iot_agent < /sql/10-seed-dev.sql
