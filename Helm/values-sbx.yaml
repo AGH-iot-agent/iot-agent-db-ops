@@ -5,8 +5,8 @@ postgres:
   port: 5432
   database: iot_agent
   secretName: iot-agent-postgres-postgresql
-  secretKey: postgres-password
-  user: postgres
+  secretKey: password
+  user: gte
   
 auth:
   username: gte
