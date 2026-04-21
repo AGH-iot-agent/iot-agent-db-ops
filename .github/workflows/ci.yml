@@ -3,26 +3,9 @@ name: DB Init & Seed
 on:
   push:
     branches: [main, feat/iot-agent-db-ops]
-    paths:
-      - 'Helm/sql/**'
-      - 'Helm/templates/**'
-      - 'Helm/values-dev.yaml'
-      - 'Helm/Chart.yaml'
   pull_request:
     branches: [main, feat/iot-agent-db-ops]
-    paths:
-      - 'Helm/sql/**'
-      - 'Helm/templates/**'
-      - 'Helm/values-*.yaml'
-      - 'Helm/Chart.yaml'
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Target environment'
-        required: true
-        default: dev
-        type: choice
-        options: [dev, sbx]
+   
 
 env:
   KUBECONFIG: /etc/rancher/k3s/k3s.yaml
@@ -54,15 +37,14 @@ jobs:
 
       - name: Helm upgrade --install db-ops
         run: |
-          helm upgrade --install iot-agent-db-ops Helm/ \
-            -f Helm/values-${{ steps.env.outputs.name }}.yaml \
-            -n ${{ steps.env.outputs.namespace }} \
-            --wait \
-            --timeout 120s
+          bash ./scripts/install-postgres.sh ${{ steps.env.outputs.name }}
 
-      - name: Show job logs
-        if: always()
+      - name: Populate DB
         run: |
-          kubectl logs -n ${{ steps.env.outputs.namespace }} \
-            -l app=iot-agent-db-ops-init \
-            --tail=100 2>/dev/null || echo "(no logs yet)"
+          kubectl exec -n iotag-${{ steps.env.outputs.namespace }} -it \ 
+            -l app=iot-agent-db-ops-init -- \
+            psql -U gte -d iot_agent > /sql/00-schema.sql
+
+          kubectl exec -n iotag-${{ steps.env.outputs.namespace }} -it \ 
+            -l app=iot-agent-db-ops-init -- \
+            psql -U gte -d iot_agent > /sql/10-seed-dev.sql
