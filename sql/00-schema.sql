@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS devices (
 );
 
 
-
 CREATE TABLE IF NOT EXISTS alerts (
   id BIGSERIAL PRIMARY KEY,
   timestamp BIGINT NOT NULL,
@@ -38,4 +37,4 @@ CREATE TABLE IF NOT EXISTS alerts (
 );
 
 CREATE INDEX IF NOT EXISTS idx_alerts_device_id ON alerts(device_id);
-CREATE INDEX IF NOT EXISTS idx_alerts_created_at ON alerts(created_at);
+-- CREATE INDEX IF NOT EXISTS idx_alerts_created_at ON alerts(created_at);
