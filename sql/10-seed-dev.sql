@@ -15,11 +15,13 @@ SELECT
 FROM generate_series(1, 100) AS t(i)
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO alerts (device_id, severity, message, created_at, active, anomaly_score, krakow_zone, leak)
+INSERT INTO alerts (
+  timestamp, device_id, severity, reason, temperature, threshold, leak, anomaly, anomaly_score, krakow_zone, active
+)
 VALUES
-  ('dev-001', 'HIGH',   'Temperature threshold exceeded', NOW(), true, 0.95, 'KROWODRZA', true),
-  ('dev-002', 'MEDIUM', 'Battery level below 30%', NOW(), false, 0.12, 'NOWA_HUTA', false),
-  ('dev-003', 'LOW',    'Heartbeat delayed', NOW(), false, NULL, 'PODGORZE', false),
-  ('dev-010', 'HIGH',   'Air quality sensor offline', NOW(), true, 0.88, 'SRODMIESCIE', true),
-  ('dev-020', 'MEDIUM', 'Humidity spike detected', NOW(), false, 0.33, 'BRONOWICE', false)
+  (EXTRACT(EPOCH FROM NOW())::BIGINT * 1000, 'dev-001', 'HIGH',   'Temperature threshold exceeded', 38.5, 30.0, true, true, 0.95, 'KROWODRZA', true),
+  (EXTRACT(EPOCH FROM NOW())::BIGINT * 1000, 'dev-002', 'MEDIUM', 'Battery level below 30%', 22.1, 30.0, false, false, 0.12, 'NOWA_HUTA', false),
+  (EXTRACT(EPOCH FROM NOW())::BIGINT * 1000, 'dev-003', 'LOW',    'Heartbeat delayed', 19.8, 30.0, false, false, 0.0, 'PODGORZE', false),
+  (EXTRACT(EPOCH FROM NOW())::BIGINT * 1000, 'dev-010', 'HIGH',   'Air quality sensor offline', 35.2, 30.0, true, true, 0.88, 'SRODMIESCIE', true),
+  (EXTRACT(EPOCH FROM NOW())::BIGINT * 1000, 'dev-020', 'MEDIUM', 'Humidity spike detected', 28.7, 30.0, false, false, 0.33, 'BRONOWICE', false)
 ON CONFLICT DO NOTHING;
