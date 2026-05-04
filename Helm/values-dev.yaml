@@ -7,3 +7,8 @@ postgres:
   user: gte
   secretName: iot-agent-postgres-postgresql
   secretKey: password
+  
+auth:
+  username: gte
+  password: gte
+  database: iot_agent

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# NOTE: If you see errors in logs like 'column ... does not exist' for table 'alerts',
+# make sure to add the missing columns (e.g. anomaly_score, krakow_zone) to the alerts table in your migration or manually.
 set -euo pipefail
 
 ENVIRONMENT="${1:-dev}"
